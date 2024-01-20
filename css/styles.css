@@ -9,7 +9,7 @@ ul {
   display: flex;
   flex-wrap: wrap;
   gap: 24px;
-  max-width: 1440px;
+  max-width: 1228px;
   margin: 0 auto;
   margin-top: 60px;
 }
