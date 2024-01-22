@@ -66,64 +66,66 @@ const images = [
   },
 ];
 
-const galleryList = document.querySelector(".gallery");
-const galleryLinks = document.querySelectorAll(".gallery-link");
+(function () {
+  function imagesTemplates() {
+    const result = images
+      .map(({ preview, original, description }) => {
+        return `
+          <li class="gallery-item">
+            <a class="gallery-link" href="${original}">
+              <img
+                class="gallery-image"
+                src="${preview}"
+                data-source="${original}"
+                alt="${description}"
+              />
+            </a>
+          </li>`;
+      })
+      .join("\n");
 
-function imagesTemplates() {
-  const result = images
-    .map(({ preview, original, description }) => {
-      return `
-        <li class="gallery-item">
-          <a class="gallery-link" href="${original}">
-            <img
-              class="gallery-image"
-              src="${preview}"
-              data-source="${original}"
-              alt="${description}"
-            />
-          </a>
-        </li>`;
-    })
-    .join("\n");
-
-  galleryList.insertAdjacentHTML("beforeend", result);
-}
-
-imagesTemplates();
-
-galleryList.addEventListener("click", (event) => {
-  event.preventDefault();
-
-  const clickedImage = event.target.closest(".gallery-image");
-  const originalSource = clickedImage.dataset.source;
-
-  if (originalSource) {
-    onClickModal(originalSource);
+    galleryList.insertAdjacentHTML("beforeend", result);
   }
-});
 
-function onClickModal(originalSource) {
-  const modal = basicLightbox.create(
-    `
-      <img
-        src="${originalSource}"
-      />
-    `,
-    {
-      onShow: (modal) => {
-        document.addEventListener("keydown", onModalClose);
-      },
-      onClose: (modal) => {
-        document.removeEventListener("keydown", onModalClose);
-      },
+  const galleryList = document.querySelector(".gallery");
+  imagesTemplates();
+
+  galleryList.addEventListener("click", (event) => {
+    event.preventDefault();
+
+    const clickedImage = event.target.classList.contains("gallery-image");
+
+    if (clickedImage) {
+      const originalSource = event.target.dataset.source;
+      if (originalSource) {
+        onClickModal(originalSource);
+      }
     }
-  );
+  });
 
-  modal.show();
+  function onClickModal(originalSource) {
+    const modal = basicLightbox.create(
+      `
+        <img
+          src="${originalSource}"
+        />
+      `,
+      {
+        onShow: (modal) => {
+          document.addEventListener("keydown", onModalClose);
+        },
+        onClose: (modal) => {
+          document.removeEventListener("keydown", onModalClose);
+        },
+      }
+    );
 
-  function onModalClose(event) {
-    if (event.code === "Escape") {
-      modal.close();
+    modal.show();
+
+    function onModalClose(event) {
+      if (event.code === "Escape") {
+        modal.close();
+      }
     }
   }
-}
+})();
